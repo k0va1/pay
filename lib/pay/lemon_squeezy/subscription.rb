@@ -22,7 +22,7 @@ module Pay
         :trial_ends_at,
         to: :pay_subscription
 
-      def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
+      def self.sync(subscription_id, object: nil, name: nil)
         # Passthrough is not return from this API, so we can't use that
         object ||= ::LemonSqueezy::Subscription.retrieve(id: subscription_id)
 
@@ -71,6 +71,15 @@ module Pay
           end
           pay_subscription
         else
+          name ||= if attrs.product_name.present?
+                     if attrs.variant_name.present?
+                       "#{attrs.product_name}(#{attrs.variant_name})"
+                     else
+                       attrs.product_name
+                     end
+                   else
+                     Pay.default_product_name
+                   end
           pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: subscription_id))
         end
       end
