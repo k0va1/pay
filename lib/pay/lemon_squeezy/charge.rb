@@ -11,8 +11,13 @@ module Pay
 
       def self.sync(charge_id, object: nil, try: 0, retries: 1)
         # Skip loading the latest subscription invoice details from the API if we already have it
-        object ||= ::LemonSqueezy::SubscriptionInvoice.retrieve(id: charge_id)
+        object ||= begin ::LemonSqueezy::SubscriptionInvoice.retrieve(id: charge_id)
+        rescue LemonSqueezy::Error => e
+          raise e unless e.message.start_with?("Error 404")
 
+          Rails.logger.debug "Couldn't find subscription invoice with id=#{charge_id}"
+          return
+        end
         attrs = object.data.attributes if object.respond_to?(:data)
         attrs ||= object
 
