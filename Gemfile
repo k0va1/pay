@@ -20,8 +20,9 @@ gem "vcr"
 gem "webmock"
 
 gem "braintree", ">= 2.92.0"
-gem "stripe", "~> 11.0"
+gem "stripe", "~> 12.0"
 gem "paddle", "~> 2.2"
+gem "lemonsqueezy", "~> 1.0"
 
 gem "receipts"
 gem "prawn"
